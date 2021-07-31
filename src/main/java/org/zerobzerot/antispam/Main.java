@@ -31,12 +31,10 @@ public class Main {
 
     @Mod.Instance("clientside-antispam")
     public static Main INSTANCE;
-
     private final Set<String> bots = ConcurrentHashMap.newKeySet();
 
     public static Set<String> download() {
-
-        System.out.println("Downloading blacklist...");
+        System.out.println("Downloading...");
 
         final URL url;
         try {
