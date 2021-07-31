@@ -3,6 +3,9 @@ package org.zerobzerot.antispam;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+/**
+ * Config POJO
+ */
 public class Config {
 
     public final URL url;

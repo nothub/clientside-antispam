@@ -1,5 +1,7 @@
 package org.zerobzerot.antispam;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import net.minecraft.util.StringUtils;
 import net.minecraft.util.text.ChatType;
@@ -30,19 +32,20 @@ import java.util.stream.Collectors;
 )
 public class Main {
 
+    public final static Gson GSON = new GsonBuilder().setPrettyPrinting().create();
     private static final Config config = loadConfig();
     private final Set<String> bots = ConcurrentHashMap.newKeySet();
 
     public static Config loadConfig() {
         final File file = new File("antispam.json");
         try {
-            return GSON.gson.fromJson(new String(Files.readAllBytes(file.toPath())), Config.class);
+            return GSON.fromJson(new String(Files.readAllBytes(file.toPath())), Config.class);
         } catch (IOException ex) {
             System.err.println(ex.getMessage());
         }
         final Config defaults = new Config();
         try {
-            FileUtils.writeStringToFile(file, GSON.gson.toJson(defaults), Charset.defaultCharset());
+            FileUtils.writeStringToFile(file, GSON.toJson(defaults), Charset.defaultCharset());
         } catch (IOException ex) {
             System.err.println(ex.getMessage());
         }
@@ -66,7 +69,7 @@ public class Main {
             throw new IllegalStateException(ex.getMessage());
         }
         System.out.println("Download finished.");
-        return GSON.gson.fromJson(response, new TypeToken<Set<String>>() {
+        return GSON.fromJson(response, new TypeToken<Set<String>>() {
         }.getType());
     }
 
