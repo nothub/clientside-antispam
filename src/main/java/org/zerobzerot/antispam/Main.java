@@ -1,6 +1,5 @@
 package org.zerobzerot.antispam;
 
-import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import net.minecraft.util.StringUtils;
 import net.minecraft.util.text.ChatType;
@@ -10,13 +9,15 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import org.apache.commons.io.FileUtils;
 
 import javax.net.ssl.HttpsURLConnection;
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.net.MalformedURLException;
-import java.net.URL;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
@@ -29,23 +30,30 @@ import java.util.stream.Collectors;
 )
 public class Main {
 
-    @Mod.Instance("clientside-antispam")
-    public static Main INSTANCE;
+    private static final Config config = loadConfig();
     private final Set<String> bots = ConcurrentHashMap.newKeySet();
 
-    public static Set<String> download() {
-        System.out.println("Downloading...");
-
-        final URL url;
+    public static Config loadConfig() {
+        final File file = new File("antispam.json");
         try {
-            url = new URL("https://raw.githubusercontent.com/nothub/clientside-antispam-data/master/bots.json");
-        } catch (MalformedURLException ex) {
-            throw new IllegalStateException(ex.getMessage());
+            return GSON.gson.fromJson(new String(Files.readAllBytes(file.toPath())), Config.class);
+        } catch (IOException ex) {
+            System.err.println(ex.getMessage());
         }
+        final Config defaults = new Config();
+        try {
+            FileUtils.writeStringToFile(file, GSON.gson.toJson(defaults), Charset.defaultCharset());
+        } catch (IOException ex) {
+            System.err.println(ex.getMessage());
+        }
+        return defaults;
+    }
 
+    public static Set<String> download() {
+        System.out.println("Downloading blacklist from url: " + config.url.toString());
         final String response;
         try {
-            final HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
+            final HttpsURLConnection connection = (HttpsURLConnection) config.url.openConnection();
             connection.setDoInput(true);
             connection.setDoOutput(false);
             connection.setUseCaches(false);
@@ -57,10 +65,8 @@ public class Main {
         } catch (IOException ex) {
             throw new IllegalStateException(ex.getMessage());
         }
-
         System.out.println("Download finished.");
-
-        return new GsonBuilder().create().fromJson(response, new TypeToken<Set<String>>() {
+        return GSON.gson.fromJson(response, new TypeToken<Set<String>>() {
         }.getType());
     }
 
