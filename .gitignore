@@ -6,6 +6,10 @@
 # git
 !/**/.gitkeep
 !/.gitignore
+!/.gitmodules
+
+# submodules
+!/data
 
 # github
 !/.github/**
