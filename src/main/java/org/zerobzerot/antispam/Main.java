@@ -2,6 +2,8 @@ package org.zerobzerot.antispam;
 
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
+import net.minecraft.util.StringUtils;
+import net.minecraft.util.text.ChatType;
 import net.minecraftforge.client.event.ClientChatReceivedEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Mod;
@@ -74,12 +76,16 @@ public class Main {
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onChat(ClientChatReceivedEvent event) {
+        if (event.getType() == ChatType.GAME_INFO) return;
+        // some plugins are dumb and send whispers as system type message, so we have to check these too...
         final String[] parts = event.getMessage().getUnformattedText().split(" ");
-        if (parts.length < 2) return;
-        // TODO: replace with regex matcher for vanilla chat format and some whisper plugin formats
-        String first = parts[0].toLowerCase().replaceAll("<", "").replaceFirst(">", "");
-        String second = parts[0].toLowerCase();
-        if (bots.contains(first) || bots.contains(second)) event.setCanceled(true);
+        if (parts.length < 1) return;
+        String name = StringUtils.stripControlCodes(parts[0]
+            .toLowerCase()
+            .replaceAll("<", "")
+            .replaceAll(">", "")
+            .replaceAll(":", ""));
+        if (bots.contains(name)) event.setCanceled(true);
     }
 
 }
