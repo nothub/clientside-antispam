@@ -35,6 +35,7 @@ public class Main {
     public final static Gson GSON = new GsonBuilder().setPrettyPrinting().create();
     private static final Config config = loadConfig();
     private final Set<String> bots = ConcurrentHashMap.newKeySet();
+    private int counter;
 
     public static Config loadConfig() {
         final File file = new File("antispam.json");
@@ -82,17 +83,20 @@ public class Main {
     }
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
-    public void onChat(ClientChatReceivedEvent event) {
-        if (event.getType() == ChatType.GAME_INFO) return;
+    public void onChat(ClientChatReceivedEvent ev) {
+        if (ev.getType() == ChatType.GAME_INFO) return;
         // some plugins are dumb and send whispers as system type message, so we have to check these too...
-        final String[] parts = event.getMessage().getUnformattedText().split(" ");
+        final String[] parts = ev.getMessage().getUnformattedText().split(" ");
         if (parts.length < 1) return;
         String name = StringUtils.stripControlCodes(parts[0])
             .toLowerCase()
             .replaceAll("<", "")
             .replaceAll(">", "")
             .replaceAll(":", "");
-        if (bots.contains(name)) event.setCanceled(true);
+        if (bots.contains(name)) {
+            ev.setCanceled(true);
+            System.out.println("Blocked messages: " + ++counter + " (" + ev.getMessage() + ")");
+        }
     }
 
 }
