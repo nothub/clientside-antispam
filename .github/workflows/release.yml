@@ -13,6 +13,9 @@ jobs:
       - name: Git
         uses: actions/checkout@v2
 
+      - name: Validation
+        uses: gradle/wrapper-validation-action@v1
+
       - name: Java
         uses: actions/setup-java@v2.1.0
         with:
