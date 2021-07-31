@@ -27,7 +27,7 @@ jobs:
           restore-keys: '${{ runner.os }}-m2'
 
       - name: Package
-        run: mvn --batch-mode --show-version --errors package --file pom.xml
+        run: ./gradlew build --stacktrace
 
       - name: Draft
         id: create_release
@@ -44,6 +44,6 @@ jobs:
       - name: Release
         uses: csexton/release-asset-action@v2
         with:
-          pattern: "target/CloudAnarchyCore-*.jar"
+          pattern: "build/libs/*.jar"
           github-token: ${{ secrets.GITHUB_TOKEN }}
           release-url: ${{ steps.create_release.outputs.upload_url }}
