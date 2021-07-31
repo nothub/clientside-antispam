@@ -1,0 +1,18 @@
+[
+  {
+    "modid": "clientside-antispam",
+    "name": "Clientside Antispam",
+    "description": "Client side Anti-Spam based on crowdsourced blacklists",
+    "version": "${version}",
+    "mcversion": "${mcversion}",
+    "url": "https://github.com/nothub/clientside-antispam",
+    "updateUrl": "",
+    "authorList": [
+      "nothub"
+    ],
+    "credits": "",
+    "logoFile": "",
+    "screenshots": [],
+    "dependencies": []
+  }
+]
