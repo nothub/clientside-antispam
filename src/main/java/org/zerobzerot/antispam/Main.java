@@ -87,11 +87,11 @@ public class Main {
         // some plugins are dumb and send whispers as system type message, so we have to check these too...
         final String[] parts = event.getMessage().getUnformattedText().split(" ");
         if (parts.length < 1) return;
-        String name = StringUtils.stripControlCodes(parts[0]
+        String name = StringUtils.stripControlCodes(parts[0])
             .toLowerCase()
             .replaceAll("<", "")
             .replaceAll(">", "")
-            .replaceAll(":", ""));
+            .replaceAll(":", "");
         if (bots.contains(name)) event.setCanceled(true);
     }
 
